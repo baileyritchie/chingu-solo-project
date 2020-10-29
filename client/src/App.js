@@ -1,10 +1,15 @@
+
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import Login from './components/Login';
+import Signup from './components/Signup';
+import Home from './components/Home';
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1 className = "text-xl text-gray-600"> test text </h1>
-      </header>
-    </div>
+    <Switch>
+      <Route path="/" component={Home} exact/>
+      <Route path="/login" component={Login}/>
+      <Route path="/signup" component={Signup}/>
+    </Switch>
   );
 }
 
