@@ -1,5 +1,6 @@
 // data model for the user 
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -14,9 +15,34 @@ const userSchema = new mongoose.Schema({
   password : {
     type: String,
     required: true
+  },
+  currentQuestion: {
+    type: Number,
+    default: 1
+  },
+  currentScore : {
+    type: Number,
+    default: 0
   }
 });
 
-let User = mongoose.model('user',userSchema);
+userSchema.pre('save', function(next) {
+  let user = this;
+  bcrypt.genSalt(10, function (err,salt) {
+    if (err) return next(err);
+    bcrypt.hash(user.password, salt, function (err,hash) {
+      if (err) return next(err);
+      user.password = hash;
+      next();
+    });
+  });
+});
 
-module.exports = User;
+userSchema.methods.comparePassword = function (input,callback) {
+  bcrypt.compare(input,this.password,function (err,isMatch) {
+    if (err) return callback(err);
+    callback(null,isMatch);
+  });
+};
+
+module.exports = mongoose.model('user',userSchema);
